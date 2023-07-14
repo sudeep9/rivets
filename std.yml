@@ -1,0 +1,25 @@
+
+std.print-vars:
+    fn: stdunits.print_vars
+    args: [varlist]
+    meta: true
+    in:
+        varlist: List of variable name to be printed
+
+std.define:
+    fn: stdunits.define_vars
+    args: [vmap]
+    meta: true
+    in:
+        vmap: dictionary of variables and values
+
+
+std.parse-as-kv:
+    fn: stdunits.parse_args_to_kv
+    args: [args, types]
+    defaults:
+        types: None
+    meta: true
+    in:
+        args: list of key=value pairs
+        types: dict describing type of each key
