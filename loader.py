@@ -30,15 +30,15 @@ def parse_step(d: dict, desc: str) -> Step:
 
 def parse_unit(d: dict, name: str):
     desc = d.get('desc', "")
-    inp = d.get('in', {})
-    out = d.get('out', {})
     args = d.get('args', [])
     defaults = d.get('defs', {})
+    inp = d.get('in', {})
+    out = d.get('out', {})
 
-    fname = d.get('fn', None)
+    fname = d.get('func', None)
     if fname:
         is_meta = d.get('meta', False)
-        map_op = d.get('map_op', False)
+        map_op = d.get('map', False)
         fn = resolve_fn(fname)
         u = FunctionUnit(fn, is_meta, map_op, name, desc, inp, out, args, defaults)
         return u

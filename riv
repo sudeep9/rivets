@@ -89,8 +89,8 @@ def do_run_cmd(ns):
 
     loader.load_std_config(ctx, yml_loader.load_yml)
     loader.load_config(ctx, cfg_path, yml_loader.load_yml, processed_cfg={'std.yml': 'done'})
-    ret = engine.run_flow(ctx, flow_name, seed)
-    pprint(ret, indent=3)
+    engine.run_step(ctx, unit.Step(flow_name, 'running unit {0}'.format(flow_name), seed)) 
+    pprint(ctx.vmap, indent=3)
 
 
 def process_args(ns):
@@ -111,7 +111,7 @@ def create_arg_parser():
 
     sub = parser.add_subparsers(title='subcommands', help='choose one of the commands',required=True, dest='cmd')
 
-    run_cmd = sub.add_parser('run', help='run the flow')
+    run_cmd = sub.add_parser('run', help='run the run')
     run_cmd.add_argument('cfg', help='File path of the cfg')
     run_cmd.add_argument('name', help='Name of the flow to run')
     run_cmd.add_argument('seed', nargs='*', help='seed arguments arguments passed')
