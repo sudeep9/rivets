@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 import argparse
 import sys
 import json
@@ -98,12 +98,16 @@ def process_args(ns):
         do_run_cmd(ns)
     
 
-if __name__ == '__main__':
+def create_arg_parser():
     parser = argparse.ArgumentParser(
-        prog='riv.py', 
-        description='CLI to drive rivet flows')
+        prog=sys.argv[0], 
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description='CLI to use rivets')
+
+    default_logfile = "{0}.log".format(sys.argv[0])
 
     parser.add_argument('-s', dest='silent', action='store_true', help='No printing on screen')
+    parser.add_argument('-l', dest='logfile', default=default_logfile, action='store', help='log file')
 
     sub = parser.add_subparsers(title='subcommands', help='choose one of the commands',required=True, dest='cmd')
 
@@ -115,5 +119,9 @@ if __name__ == '__main__':
     list_cmd = sub.add_parser('list', help='List the units')
     list_cmd.add_argument('cfg', help='File path of the cfg')
 
+    return parser
+
+if __name__ == '__main__':
+    parser = create_arg_parser()
     ns = parser.parse_args()
     process_args(ns)
