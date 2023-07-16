@@ -2,6 +2,7 @@ import sys
 import os
 
 from unit import Step, FunctionUnit, FlowUnit
+import errors
 from context import Context
 import importlib
 
@@ -93,13 +94,14 @@ def load_config(ctx: Context, cfg_file_path: str, config_file_loader, processed_
 
     d = config_file_loader(cfg_file_path)
 
-
     if '$import' in d:
         for parent_cfg in d['$import']:
             full_path = find_cfg_file(parent_cfg)
 
             if full_path:
                 load_config(ctx, full_path, config_file_loader, processed_cfg)
+            else:
+                raise errors.RivException("rivets config file {0} not found", parent_cfg)
         
         del d['$import']
 
