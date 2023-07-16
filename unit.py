@@ -1,5 +1,3 @@
-
-
 class Unit:
     # inp: describes all inputs.
     # out: (opt) describes the output mapping
@@ -13,7 +11,6 @@ class Unit:
         self.args = args
         self.defaults = defs
         self.map_output = True
-    
 
 class FunctionUnit(Unit):
     def __init__(self, fn, is_meta: bool, map_op: bool, *args, **kargs):

@@ -70,11 +70,15 @@ def find_cfg_file(cfg_file: str):
         if os.path.exists(cfgpath):
             return cfgpath
 
-        for ent in os.scandir(p):
-            if ent.is_dir():
-                cfgpath = os.path.join(p, ent.name, cfg_file)
-                if os.path.exists(cfgpath):
-                    return cfgpath
+        if not os.path.isdir(p):
+            continue
+
+        with os.scandir(p) as entries:
+            for ent in entries:
+                if ent.is_dir():
+                    cfgpath = os.path.join(p, ent.name, cfg_file)
+                    if os.path.exists(cfgpath):
+                        return cfgpath
 
 
 def load_config(ctx: Context, cfg_file_path: str, config_file_loader, processed_cfg = None):
@@ -87,7 +91,7 @@ def load_config(ctx: Context, cfg_file_path: str, config_file_loader, processed_
 
     if base_cfg_file in processed_cfg:
         if processed_cfg[base_cfg_file] == 'in-process':
-            raise Exception("cyclic import detected {0}".format(base_cfg_file))
+            raise errors.RivException("cyclic import detected {0}".format(base_cfg_file))
         
         if processed_cfg[base_cfg_file] == 'done':
             return
@@ -101,7 +105,7 @@ def load_config(ctx: Context, cfg_file_path: str, config_file_loader, processed_
             if full_path:
                 load_config(ctx, full_path, config_file_loader, processed_cfg)
             else:
-                raise errors.RivException("rivets config file {0} not found", parent_cfg)
+                raise errors.RivException("rivets config file [{0}] not found".format(parent_cfg))
         
         del d['$import']
 
