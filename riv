@@ -4,11 +4,13 @@ import sys
 import json
 from pprint import pprint
 import logging
+import traceback
 
 import unit
 import context
 import engine
 import loader
+import errors
 import yml_loader
 
 
@@ -89,15 +91,15 @@ def do_run_cmd(ns):
 
     loader.load_std_config(ctx, yml_loader.load_yml)
     loader.load_config(ctx, cfg_path, yml_loader.load_yml, processed_cfg={'std.yml': 'done'})
-    engine.run_step(ctx, unit.Step(flow_name, 'running unit {0}'.format(flow_name), seed)) 
-    pprint(ctx.vmap, indent=3)
+
+    ret = engine.run_step(ctx, unit.Step(flow_name, 'running unit {0}'.format(flow_name), seed)) 
+    pprint(ret, indent=3)
 
 
 def process_args(ns):
     if ns.cmd == 'run':
         do_run_cmd(ns)
     
-
 def create_arg_parser():
     parser = argparse.ArgumentParser(
         prog=sys.argv[0], 

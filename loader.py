@@ -20,9 +20,9 @@ def resolve_fn(f: str):
 
 
 def parse_step(d: dict, desc: str) -> Step:
-    name = d.get('$name', desc)
+    name = d.get('$unit', desc)
     try:
-        del d['$name']
+        del d['$unit']
     except KeyError:
         pass
 
@@ -90,14 +90,14 @@ def load_config(ctx: Context, cfg_file_path: str, config_file_loader, processed_
     d = config_file_loader(cfg_file_path)
 
 
-    if 'imports' in d:
-        for parent_cfg in d['imports']:
+    if '@import' in d:
+        for parent_cfg in d['@import']:
             full_path = find_cfg_file(parent_cfg)
 
             if full_path:
                 load_config(ctx, full_path, config_file_loader, processed_cfg)
         
-        del d['imports']
+        del d['@import']
 
     umap = parse_units(d)
     ctx.add_umap(umap)

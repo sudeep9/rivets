@@ -22,3 +22,21 @@ std.parse-as-kv:
     in:
         args: List of key=value pairs
         types: Dict describing type of each key
+
+std.to-list:
+    func: stdunits.to_list
+    args: [vname, args]
+    in:
+        vname: Name of the variable name to be the list
+        args: List of items from context to used in list
+
+std.basic-cli-args:
+    func: stdunits.basic_cli_arguments
+    meta: true
+    args: [args, spec]
+    defs:
+        usage: null
+    in:
+        args: List of arguments to parse
+        spec: List of dict describing the arguments
+        usage: Usage describing the flow/unit

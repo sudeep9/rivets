@@ -1,19 +1,17 @@
 
 from context import Context
+import engine 
 
 def print_vars(ctx: Context, varlist):
     print("---- print vars ---- (Start)")
     for v in varlist:
-        if v == '$?':
-            val = ctx.last_ret
-        else: 
-            val = ctx.vmap.get(v, '<not found>')
-
+        val = ctx.vmap.get(v, '<not found>')
         print(v, "=", val)
     print("---- print vars ---- (End)")
 
 def define_vars(ctx: Context, vmap: dict[str,any]):
-    ctx.vmap.update(vmap)
+    for name, val in vmap.items():
+        ctx.vmap[name] = engine.resolve_from_ctx(ctx, val)
 
 def parse_args_to_kv(ctx: Context, args: list[str], types: dict[str,str]):
     if types is None:
@@ -32,3 +30,20 @@ def parse_args_to_kv(ctx: Context, args: list[str], types: dict[str,str]):
                 ctx.vmap[key] = val
         except KeyError:
             pass
+
+def to_list(ctx: Context, vname: str, args: list[any]):
+    ret = []
+    for a in args:
+        ret.append(engine.resolve_from_ctx(ctx, a))
+    ctx.vmap[vname] = ret
+
+
+def basic_cli_arguments(ctx: Context, args: list, spec: list[dict], usage: None):
+    import argparse
+    parser = argparse.ArgumentParser(prog=ctx.curr_unit, usage=usage)
+
+    for argspec in spec:
+        parser.add_argument(**argspec)
+
+    ns = parser.parse_args(args)
+    ctx.vmap.update(vars(ns))

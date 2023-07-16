@@ -4,10 +4,11 @@ class Context:
     def __init__(self, umap: dict[str,Unit], vmap:dict[str,any]):
         self.umap = umap
         self.vmap = vmap
-        self.last_ret = None
-        self.log = None
+        self.l_retog = None
         self.level = 0
         self.callback_fn = no_op_callback
+        self.curr_unit = None
+        self.curr_step = None
 
     def add_umap(self, umap: dict):
         self.umap.update(umap)
