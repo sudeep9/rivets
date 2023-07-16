@@ -3,14 +3,14 @@ std.print-vars:
     func: stdunits.print_vars
     args: [varlist]
     meta: true
-    in:
+    input:
         varlist: List of variable name to be printed
 
 std.define:
     func: stdunits.define_vars
     args: [vmap]
     meta: true
-    in:
+    input:
         vmap: Dictionary of variables and values
 
 std.parse-as-kv:
@@ -19,14 +19,14 @@ std.parse-as-kv:
     meta: true
     defs:
         types: None
-    in:
+    input:
         args: List of key=value pairs
         types: Dict describing type of each key
 
 std.to-list:
     func: stdunits.to_list
     args: [vname, args]
-    in:
+    input:
         vname: Name of the variable name to be the list
         args: List of items from context to used in list
 
@@ -36,7 +36,7 @@ std.basic-cli-args:
     args: [args, spec]
     defs:
         usage: null
-    in:
+    input:
         args: List of arguments to parse
         spec: List of dict describing the arguments
         usage: Usage describing the flow/unit

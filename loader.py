@@ -32,7 +32,7 @@ def parse_unit(d: dict, name: str):
     desc = d.get('desc', "")
     args = d.get('args', [])
     defaults = d.get('defs', {})
-    inp = d.get('in', {})
+    inp = d.get('input', {})
     out = d.get('out', {})
 
     fname = d.get('func', None)
@@ -90,14 +90,14 @@ def load_config(ctx: Context, cfg_file_path: str, config_file_loader, processed_
     d = config_file_loader(cfg_file_path)
 
 
-    if '@import' in d:
-        for parent_cfg in d['@import']:
+    if '$import' in d:
+        for parent_cfg in d['$import']:
             full_path = find_cfg_file(parent_cfg)
 
             if full_path:
                 load_config(ctx, full_path, config_file_loader, processed_cfg)
         
-        del d['@import']
+        del d['$import']
 
     umap = parse_units(d)
     ctx.add_umap(umap)
