@@ -1,6 +1,7 @@
 
 from context import Context
 import engine 
+import errors
 
 def print_vars(ctx: Context, varlist):
     print("---- print vars ---- (Start)")
@@ -47,3 +48,11 @@ def basic_cli_arguments(ctx: Context, args: list, spec: list[dict], usage: None)
 
     ns = parser.parse_args(args)
     ctx.vmap.update(vars(ns))
+
+def map_dict_to_ctx(ctx: Context, d: dict, includes: None):
+    if isinstance(d, dict):
+        if includes:
+            for key in includes:
+                ctx.vmap(d[key])
+        else:
+            ctx.vmap.update(d)

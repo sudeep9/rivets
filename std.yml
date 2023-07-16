@@ -40,3 +40,13 @@ std.basic-cli-args:
         args: List of arguments to parse
         spec: List of dict describing the arguments
         usage: Usage describing the flow/unit
+
+std.map-dict-to-ctx:
+    func: stdunits.map_dict_to_ctx
+    meta: true
+    args: [d]
+    defs:
+        includes: null
+    input:
+        d: Dictionary to map
+        includes: List of keys to include
