@@ -65,11 +65,15 @@ def parse_units(d: dict[str]):
 
 def find_cfg_file(cfg_file: str):
     for p in sys.path:
-        path = os.path.join(p, cfg_file)
-        if os.path.exists(path):
-            return path
-    return None
+        cfgpath = os.path.join(p, cfg_file)
+        if os.path.exists(cfgpath):
+            return cfgpath
 
+        for ent in os.scandir(p):
+            if ent.is_dir():
+                cfgpath = os.path.join(p, ent.name, cfg_file)
+                if os.path.exists(cfgpath):
+                    return cfgpath
 
 
 def load_config(ctx: Context, cfg_file_path: str, config_file_loader, processed_cfg = None):
