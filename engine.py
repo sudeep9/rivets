@@ -22,7 +22,7 @@ def resolve_from_ctx(ctx: Context, val: any):
         return val
 
     if val.startswith('\$'):
-        return context_get(ctx, val[2:])
+        return val[1:]
 
     if val.startswith('$'):
         sub = val[1:]
@@ -34,6 +34,28 @@ def resolve_from_ctx(ctx: Context, val: any):
             return context_get(ctx, sub)
 
     return val
+
+def resolve_step_input(ctx: Context, inp):
+    if isinstance(inp, dict):
+        ret = {}
+        for key, val in inp.items():
+            if key.startswith('$'):
+                key = key[1:]
+                if isinstance(val, dict) or isinstance(val, list):
+                    ret[key] = resolve_step_input(ctx, val)
+                else:
+                    v = resolve_from_ctx(ctx, val)
+                    ret[key] = v
+            else:
+                ret[key] = val
+    elif isinstance(inp, list):
+        ret = []
+        for i in range(len(inp)):
+            ret.append(resolve_step_input(ctx, inp[i]))
+    else:
+        return resolve_from_ctx(ctx, inp)
+
+    return ret
 
 def resolve_value(ctx: Context, name: str, inp: dict[str,any]):
     try:
@@ -110,16 +132,18 @@ def run_step(ctx: Context, step: Step):
     ctx.curr_step = step.name
     ctx.curr_unit = u.name
 
+    inp = resolve_step_input(ctx, step.inp)
+
     if isinstance(u, FunctionUnit):
         try:
             ctx.callback_fn(ctx, 'before', step=step)
-            ret = run_fn_unit(ctx, u, step.inp)
+            ret = run_fn_unit(ctx, u, inp)
         except RivException as e:
             raise
         except Exception as e:
             raise RivException("function unit failed", level=ctx.level, unit=step.name, step=step.desc)
     elif isinstance(u, FlowUnit):
-        kargs = map_flow_kargs(ctx, step.inp, u.args, u.defaults)
+        kargs = map_flow_kargs(ctx, inp, u.args, u.defaults)
         child_ctx = clone_context(ctx, kargs)
         child_ctx.curr_step = ctx.curr_step
 
@@ -130,12 +154,6 @@ def run_step(ctx: Context, step: Step):
 
     ctx.curr_step = None
     ctx.curr_unit = None
-    return ret
-
-def run_flow(ctx: Context, name: str, inp: dict[str,any]):
-    u = get_unit(ctx, name)
-    ctx.vmap.update(inp)
-    ret = run_flow_unit(ctx, u)
     return ret
 
 def _dq_subscript(ctx: Context, s: any, pval = None):
