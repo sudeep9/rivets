@@ -56,3 +56,10 @@ def map_dict_to_ctx(ctx: Context, d: dict, includes: None):
                 ctx.vmap(d[key])
         else:
             ctx.vmap.update(d)
+
+def to_dict(ctx: Context, vname: str, vals: dict):
+    d = {}
+    for key, v in vals.items():
+        d[key] = engine.resolve_from_ctx(ctx, v)
+    
+    ctx.vmap[vname]= d
