@@ -33,6 +33,7 @@ std.to-list:
 std.to-dict:
     func: stdunits.to_dict
     args: [vname, vals]
+    meta: true
     input:
         vname: Name of the variable name to be the list
         vals: Dict of key=value
