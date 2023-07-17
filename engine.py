@@ -26,7 +26,9 @@ def resolve_from_ctx(ctx: Context, val: any):
 
     if val.startswith('$'):
         sub = val[1:]
-        if sub.startswith('look '):
+        if sub.startswith('eval '):
+            return expr_eval(ctx, sub[5:])
+        elif sub.startswith('look '):
             return dict_query(ctx, sub[5:])
         elif sub.startswith('form '):
             return resolve_format(ctx, sub[5:])
@@ -205,6 +207,37 @@ def dict_query(ctx: Context, q: str):
 def resolve_format(ctx: Context, format_str: str):
     return format_str.format(**ctx.vmap)
 
+def exec_fn(ctx: Context, fn, args):
+    if fn == 'form':
+        return resolve_format(ctx, *args)
+    elif fn == 'look':
+        return dict_query(ctx, *args)
+    else:
+        raise Exception(f"function {fn} not found")
+
+def _expr_eval(ctx, s):
+    if isinstance(s, ast.Call):
+        fn = _expr_eval(ctx, s.func)
+
+        args = []
+        for a in s.args:
+            args.append(_expr_eval(ctx, a))
+
+        return exec_fn(ctx, fn, args)
+    elif isinstance(s, ast.Name):
+        return s.id
+    elif isinstance(s, ast.Constant):
+        return s.value
+    elif isinstance(s, ast.Subscript):
+        return _dq_subscript(ctx, s) 
+    elif isinstance(s, ast.Expression):
+        return _expr_eval(ctx, s.body)
+
+    raise Exception(f"unknown type in expr eval = {s}")
+
+def expr_eval(ctx, s):
+    return _expr_eval(ctx, ast.parse(s, mode='eval'))
+
 if __name__ == '__main__':
     import sys
     from pprint import pprint
@@ -215,11 +248,16 @@ if __name__ == '__main__':
             }
         ],
         'val': [1,2,3,4,5,6,7,8,9,10],
+        'q': 'a[\'{ww}\'][{n}]'
     }
 
     ctx = empty_context()
     ctx.vmap['a'] = a
+    ctx.vmap['n'] = 4
+    ctx.vmap['ww'] = 'val'
     ctx.vmap['_riv'] = a
+    ctx.vmap['fn'] = 'look'
     pprint(a, indent=4)
 
-    print(dict_query(ctx, sys.argv[1]))
+    print(ast.dump(ast.parse(sys.argv[1], mode='eval'), indent=2))
+    print(expr_eval(ctx, sys.argv[1]))
