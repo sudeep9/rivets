@@ -21,11 +21,12 @@ class FunctionUnit(Unit):
 
 
 class Step:
-    def __init__(self, name: str, desc: str, inp: dict[str, any], out):
+    def __init__(self, name: str, desc: str, inp: dict[str, any], out, map_output=False):
         self.desc = desc
         self.name = name
         self.inp = inp
         self.out = out
+        self.map_output=map_output
 
 
 class FlowUnit(Unit):

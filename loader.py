@@ -33,7 +33,13 @@ def parse_step(d: dict, desc: str) -> Step:
     except KeyError:
         out = {}
 
-    return Step(name, desc, d, out)
+    try:
+        map_output = d['$map-output']
+        del d['$map-output']
+    except KeyError:
+        map_output = False
+
+    return Step(name, desc, d, out, map_output=map_output)
 
 def parse_unit(d: dict, name: str):
     desc = d.get('desc', "")
