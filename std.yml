@@ -58,3 +58,9 @@ std.map-dict-to-ctx:
     input:
         d: Dictionary to map
         includes: List of keys to include
+
+std.load-yml:
+    func: rivets.yml_loader.load_yml
+    args: [filepath]
+    input:
+        filepath: File path to yaml file

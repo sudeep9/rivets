@@ -112,6 +112,8 @@ def run_flow_unit(ctx: Context, u: FlowUnit):
     for step in u.steps:
         ret = run_step(ctx, step)
         ctx.vmap['LAST'] = ret
+        for key, val in step.out.items():
+            ctx.vmap[key] = resolve_from_ctx(ctx, val)
 
     try:
         ctx.log.info("mapping output for flow level=%s name=%s", ctx.level, u.name)

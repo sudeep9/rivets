@@ -21,10 +21,11 @@ class FunctionUnit(Unit):
 
 
 class Step:
-    def __init__(self, name: str, desc: str, inp: dict[str, any]):
+    def __init__(self, name: str, desc: str, inp: dict[str, any], out):
         self.desc = desc
         self.name = name
         self.inp = inp
+        self.out = out
 
 
 class FlowUnit(Unit):

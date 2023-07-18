@@ -27,7 +27,13 @@ def parse_step(d: dict, desc: str) -> Step:
     except KeyError:
         pass
 
-    return Step(name, desc, d)
+    try:
+        out = d['$out']
+        del d['$out']
+    except KeyError:
+        out = {}
+
+    return Step(name, desc, d, out)
 
 def parse_unit(d: dict, name: str):
     desc = d.get('desc', "")
