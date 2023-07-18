@@ -92,7 +92,7 @@ def do_run_cmd(ns):
     loader.load_std_config(ctx, yml_loader.load_yml)
     loader.load_config(ctx, cfg_path, yml_loader.load_yml, processed_cfg={'std.yml': 'done'})
 
-    ret = engine.run_step(ctx, unit.Step(flow_name, 'running unit {0}'.format(flow_name), seed)) 
+    ret = engine.run_step(ctx, unit.Step(flow_name, 'running unit {0}'.format(flow_name), seed, {})) 
     pprint(ret, indent=3)
 
 
