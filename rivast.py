@@ -1,15 +1,7 @@
 
-from rivparser import Lark_StandAlone, Transformer, Token
-from unit import Step, FunctionUnit, FlowUnit
+from rivparser import Lark_StandAlone, Transformer
+from unit import Step, FunctionUnit, FlowUnit, RivetsFile
 
-def parse(p, filepath):
-    with open(filepath) as f:
-        buf = f.read()
-
-    t = p.parse(buf)
-    print(t)
-    for name, u in t.items():
-        print(name,":", str(u))
 
 class RivTransformer(Transformer):
     def fn(self, item):
@@ -26,6 +18,12 @@ class RivTransformer(Transformer):
 
     def STR(self, item):
         return item.value[1:-1]
+
+    def STR_SQ(self, item):
+        return item.value[1:-1]
+
+    def string(self, item):
+        return item[0]
 
     def NUMBER(self, items):
         return int(items.value)
@@ -53,15 +51,19 @@ class RivTransformer(Transformer):
 
     def true(self, val):
         return True
+
     def nil(self, _val):
         return None
+
+    def imports(self, items):
+        return ('imports', items)
 
     def step(self, items):
         desc = items[0]
         name = desc
-        inp = {}
+        inp, out = {}, {}
         map_output = False
-        out = {}
+
         for k, v in items[1:]:
             if k == '$unit':
                 name = v
@@ -82,7 +84,7 @@ class RivTransformer(Transformer):
         return items
 
     def flow_body(self, items):
-        return items[0]
+        return items
 
     def unit_desc(self, items):
         return ("desc", items[0])
@@ -123,6 +125,7 @@ class RivTransformer(Transformer):
         meta = False
         map_op = False
         desc = name
+        out = {}
         for x in items[1]:
             ty, val = x
             if ty == 'desc':
@@ -141,7 +144,7 @@ class RivTransformer(Transformer):
             raise Exception(f"Function name [{fn}] is not defined or is not string")
 
         u = FunctionUnit(fn, meta, map_op, name, desc, inp, out, args, defs)
-        return u
+        return ('unit', u)
 
     def flow(self, items):
         name = items[0]
@@ -150,21 +153,52 @@ class RivTransformer(Transformer):
         steps = []
         out = {}
 
-        for ty, val in items[1:]:
+        for ty, val in items[1]:
             if ty == 'in':
                 _, inp, defs = val
             elif ty == 'out':
                 out = val
+            elif ty == 'steps':
+                steps = val
             elif ty == 'opt':
                 pass
         u = FlowUnit(steps, name, name, inp, out, args, defs)
-        return u
+        return ('flow', u)
 
     def start(self, items):
-        return {u.name: u for u in items}
+        rvfile = RivetsFile()
 
+        for ty, obj in items:
+            if ty == 'imports':
+                rvfile.imports = obj
+            elif ty in ('unit', 'flow'):
+                rvfile.unit_map[obj.name] = obj
 
+        return rvfile
 
-p = Lark_StandAlone(transformer=RivTransformer())
-#p = Lark_StandAlone()
-parse(p, "./test.riv")
+def create_parser(t=None):
+    if t is None:
+        t = RivTransformer()
+
+    p = Lark_StandAlone(transformer=t)
+    return p
+
+def parse_str(buf: str, parser=None) -> RivetsFile:
+    if parser is None:
+        parser = create_parser()
+
+    t = parser.parse(buf)
+    return t
+
+def parse_file(filepath, parser=None) -> RivetsFile:
+    with open(filepath) as f:
+        buf = f.read()
+    
+    return parse_str(buf, parser=parser)
+
+if __name__ == '__main__':
+    import sys
+    t = parse_file(sys.argv[1])
+    print("imports", t.imports)
+    for name, u in t.unit_map.items():
+        print(f"{name} =>\t{u}")

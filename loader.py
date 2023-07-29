@@ -19,7 +19,6 @@ def resolve_fn(f: str):
         raise Exception("failed to parse function name {0}".format(f))
 
 
-
 def parse_step(d: dict, desc: str) -> Step:
     name = d.get('$unit', desc)
     try:
@@ -93,38 +92,40 @@ def find_cfg_file(cfg_file: str):
                         return cfgpath
 
 
-def load_config(ctx: Context, cfg_file_path: str, config_file_loader, processed_cfg = None):
-    if processed_cfg is None:
-        processed_cfg = {}
+def load_config(ctx: Context, cfg_file_path: str, config_file_loader, seen = None):
+    if not cfg_file_path.endswith(".riv"):
+        cfg_file_path += ".riv"
+
+    if seen is None:
+        seen = {}
 
     base_cfg_file = os.path.basename(cfg_file_path)
 
-    ctx.log.info("loading config name=%s path=%s, processed=%s", base_cfg_file, os.path.dirname(cfg_file_path), processed_cfg)
+    ctx.log.info("loading config name=%s path=%s, processed=%s", base_cfg_file, os.path.dirname(cfg_file_path), seen)
 
-    if base_cfg_file in processed_cfg:
-        if processed_cfg[base_cfg_file] == 'in-process':
+    if base_cfg_file in seen:
+        if seen[base_cfg_file] == 'in-process':
             raise errors.RivException("cyclic import detected {0}".format(base_cfg_file))
         
-        if processed_cfg[base_cfg_file] == 'done':
+        if seen[base_cfg_file] == 'done':
             return
 
     d = config_file_loader(cfg_file_path)
 
-    if '$import' in d:
-        for parent_cfg in d['$import']:
+    if d.imports:
+        for parent_cfg in d.imports:
+            if not parent_cfg.endswith(".riv"):
+                parent_cfg += ".riv"
             full_path = find_cfg_file(parent_cfg)
 
             if full_path:
-                load_config(ctx, full_path, config_file_loader, processed_cfg)
+                load_config(ctx, full_path, config_file_loader, seen)
             else:
                 raise errors.RivException("rivets config file [{0}] not found".format(parent_cfg))
-        
-        del d['$import']
 
-    umap = parse_units(d)
-    ctx.add_umap(umap)
-    processed_cfg[base_cfg_file] = 'done'
+    ctx.add_umap(d.unit_map)
+    seen[base_cfg_file] = 'done'
 
 def load_std_config(ctx: Context, loader):
-    cfg_file = find_cfg_file('std.yml')
+    cfg_file = find_cfg_file('std.riv')
     load_config(ctx, cfg_file, loader, {})

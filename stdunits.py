@@ -63,3 +63,20 @@ def to_dict(ctx: Context, vname: str, vals: dict):
         d[key] = engine.resolve_from_ctx(ctx, v)
     
     ctx.vmap[vname]= d
+
+def getenv(ctx: Context, vars, error=True):
+    import os
+    missing = []
+    values = {}
+
+    for v in vars:
+        try:
+            val = os.environ[v]
+            values[v] = val
+        except KeyError:
+            missing.append(v)
+
+    if len(missing) > 0 and error:
+        raise Exception(f"Environment variables {missing} not found")
+    
+    ctx.vmap.update(values)

@@ -42,3 +42,8 @@ class FlowUnit(Unit):
 
     def __str__(self):
         return f"{self.name} in:{self.inp} defs:{self.defaults} out:{self.out}"
+
+class RivetsFile:
+    def __init__(self):
+        self.imports = None
+        self.unit_map = {}

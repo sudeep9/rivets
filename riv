@@ -12,6 +12,7 @@ import engine
 import loader
 import errors
 import yml_loader
+import rivast
 
 
 def setup_logging():
@@ -89,8 +90,8 @@ def do_run_cmd(ns):
     if not ns.silent:
         ctx.callback_fn = show_progress
 
-    loader.load_std_config(ctx, yml_loader.load_yml)
-    loader.load_config(ctx, cfg_path, yml_loader.load_yml, processed_cfg={'std.yml': 'done'})
+    loader.load_std_config(ctx, rivast.parse_file)
+    loader.load_config(ctx, cfg_path, rivast.parse_file, seen={'std.riv': 'done'})
 
     ret = engine.run_step(ctx, unit.Step(flow_name, 'running unit {0}'.format(flow_name), seed, {})) 
     pprint(ret, indent=3)

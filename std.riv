@@ -1,0 +1,48 @@
+(unit std.to-list
+    (fn rivets.stdunits.to_list)
+    (in 
+        vname:  "Name of the variable name to be the list"
+        args:   "List of items from context to be used in list"))
+
+(unit std.basic-cli-args
+    (fn stdunits.basic_cli_arguments)
+    (in
+        args:   "List of arguments to parse"
+        spec:   "List of dict describing the arguments"
+        usage:  def: nil "Usage describing the flow/unit"))
+
+(unit std.define 
+    (fn stdunits.define_vars)
+    (opt meta: true)
+    (in
+        vmap: "Dictionary of variables and values"))
+
+(unit std.load-yml
+    (fn rivets.yml_loader.load_yml)
+    (in
+        filepath: "File path to yaml file"))
+
+(unit std.print-vars
+    (fn stdunits.print_vars)
+    (opt meta: true)
+    (in
+        varlist: "List of variable name to be printed"))
+
+(unit std.add
+    (fn stdunits.add)
+    (in
+        a: "First integer"
+        b: "Second integer"))
+
+(unit std.mul
+    (fn stdunits.mul)
+    (in
+        a: "First integer"
+        b: "Second integer"))
+
+(unit std.getenv
+    (fn stdunits.getenv)
+    (opt meta: true)
+    (in
+        vars:   "List of environment variables"
+        error:  def: true "Error if any of the variables are missing")) 

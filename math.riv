@@ -1,0 +1,33 @@
+(imports "std")
+
+(flow std.square
+    (in
+        n: "Integer to square")
+    (out
+        result: "Result of square")
+    (steps
+        (std.mul a:$n b:$n +result:$LAST)))
+
+(flow std.binomial
+    (in
+        a: "First integer"
+        b: "Second integer")
+    (out
+        result: "Result of square")
+    (steps
+        (std.add
+            +result: $LAST)
+        (std.square 
+            n: $result
+            +result: $LAST)))
+
+(flow math.test-flow
+    (out
+        func: 'Result of square')
+    (steps
+        ("Get environment"
+            $unit: std.getenv
+            vars: (FILEPATH)
+            +filepath: $FILEPATH)
+        (std.load-yml 
+            +func: "$eval LAST['std.print-vars']['func']")))

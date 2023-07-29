@@ -1,5 +1,6 @@
 from typing import Iterable
 import ast
+import importlib
 from unit import Unit, FunctionUnit, FlowUnit, Step
 from errors import VarNotFoundInContext, UnitNotFound, RivException
 from context import Context, empty_context, clone_context
@@ -91,9 +92,23 @@ def map_flow_kargs(ctx: Context, inp: dict[str,any], must_args: Iterable, kargs:
         ret[name] = val
     return ret
 
-def run_fn_unit(ctx: Context, u: FunctionUnit, inp: dict[str,any]):
-    ctx.log.info("running function unit name=%s fn=%s", u.name, u.fn.__name__)
+def resolve_fn(f: str):
+    parts = f.rsplit(sep='.', maxsplit=1)
+    if len(parts) == 1:
+        print(locals())
+        return locals()[parts[0]]
+    elif len(parts) == 2:
+        mod = importlib.import_module(parts[0])
+        fname = parts[1]
+        return getattr(mod, fname)
+    else:
+        raise Exception("failed to parse function name {0}".format(f))
 
+def run_fn_unit(ctx: Context, u: FunctionUnit, inp: dict[str,any]):
+    if isinstance(u.fn, str):
+        u.fn = resolve_fn(u.fn)
+
+    ctx.log.info("running function unit name=%s fn=%s", u.name, u.fn.__name__)
     args = map_pargs(ctx, inp, u.args)
     kargs = map_kargs(ctx, inp, u.defaults)
     if u.is_meta:
@@ -121,8 +136,8 @@ def run_flow_unit(ctx: Context, u: FlowUnit):
     try:
         ctx.log.info("mapping output for flow level=%s name=%s", ctx.level, u.name)
         ret = {}
-        for out_name, val in u.out.items():
-            ret[out_name] = resolve_from_ctx(ctx, val)
+        for out_name in u.out:
+            ret[out_name] = context_get(ctx, out_name)
 
         ctx.log.info("ctx after flow level=%s name=%s vmap=%s ret=%s", ctx.level, u.name, ctx.vmap, ret)
         ctx.callback_fn(ctx, 'after', f=u)
