@@ -1,0 +1,43 @@
+(unit hello 
+    (desc "Greets the world")
+    (fn rivets.engine.run)
+    (opt meta: false)
+    (in 
+        name: "Name of the cluster"
+        token: "Token value")
+    (out x: "Integer"))
+
+(flow myflow
+    (in 
+        replid: "Replication ID"
+        interval: def: 100 "Interval")
+    (steps
+        (Basic-Settings
+            $unit: std.define
+            abc: False
+            name: nil
+            $out: {
+                out_xyz: "world"
+                name: {
+                    a: 1
+                    b: 2
+                }
+            })))
+
+
+#(flow myflow
+#    (desc "My awesome flow")
+#    (in 
+#        name: "Name of the cluster"
+#        n:   def:100  "Integer")
+#    (out x: "Integer")
+#    (steps
+#        (@Basic-Cli)
+#        (Basic-Settings
+#            cluster: $cluster_name
+#            abc: nil
+#            map: false
+#            $out: { out_xyz: "world" name: Tony})
+#        (List-replications
+#            cluster: $cluster_name
+#            myval: {a:1 b:2})))

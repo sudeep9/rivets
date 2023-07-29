@@ -1,0 +1,41 @@
+start: (unit|flow)*
+
+unit: "(" "unit" IDENTIFIER unit_body ")" -> unit
+unit_body: unit_desc? fn_def options? unit_input? unit_output?
+fn_def: "(" "fn" IDENTIFIER ")" -> fn
+unit_input: "(" "in" arg_decl_def+ ")" -> input
+unit_output: "(" "out" arg_decl+ ")" -> output
+
+flow: "(" "flow" IDENTIFIER flow_body ")" -> flow
+flow_body: unit_desc? options? unit_input? unit_output? steps
+
+unit_desc: "(" "desc" STR ")"
+
+steps: "(" "steps" step+ ")" -> steps
+step: "(" indent_str kv* ")" -> step
+options: "(" "opt" kv+ ")"
+
+arg_decl: IDENTIFIER ":" STR -> arg_decl
+arg_decl_def: IDENTIFIER ":" default? STR -> arg_decl_def
+default: "def" ":" value  -> default
+kv: IDENTIFIER ":" value -> kv
+value: NUMBER 
+    | STR 
+    | IDENTIFIER 
+    | dict
+    | list
+    | "nil" -> nil
+    | "true" -> true
+    | "false" -> false 
+indent_str: (STR | IDENTIFIER) -> indent_str
+dict: "{" kv* "}" 
+list: "(" value* ")"
+
+COMMENT: /#[^\n]*/
+NL: (/\n?\n[\t ]*/ | COMMENT)
+NUMBER: /[0-9]+/
+STR: "\"" /.*?/ "\""
+IDENTIFIER: /[a-zA-Z$@][a-zA-Z0-9-._]*/
+%ignore /[\n\t \f]+/ // WS
+%ignore /\\[\t \f]*\r?\n/ // LINE_CONT
+%ignore COMMENT
