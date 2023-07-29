@@ -46,3 +46,6 @@
     (in
         vars:   "List of environment variables"
         error:  def: true "Error if any of the variables are missing")) 
+
+(unit std.testdict
+    (fn stdunits.testdict))

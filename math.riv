@@ -22,12 +22,8 @@
             +result: $LAST)))
 
 (flow math.test-flow
-    (out
-        func: 'Result of square')
     (steps
-        ("Get environment"
-            $unit: std.getenv
-            vars: (FILEPATH)
-            +filepath: $FILEPATH)
-        (std.load-yml 
-            +func: "$eval LAST['std.print-vars']['func']")))
+        (std.testdict
+            $map-output: false)
+        (std.print-vars
+            varlist: ))))
