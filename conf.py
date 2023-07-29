@@ -60,13 +60,19 @@ class RivTransformer(Transformer):
         desc = items[0]
         name = desc
         inp = {}
+        map_output = False
+        out = {}
         for k, v in items[1:]:
             if k == '$unit':
                 name = v
-                continue
-            inp[k] = v
+            elif k == '$map-output':
+                map_output = v
+            elif k.startswith("+"):
+                out[k[1:]] = v
+            else:
+                inp[k] = v
         
-        s = Step(name, desc, inp, None)
+        s = Step(name, desc, inp, out, map_output=map_output)
         return s
 
     def steps(self, items):

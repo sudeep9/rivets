@@ -35,7 +35,7 @@ COMMENT: /#[^\n]*/
 NL: (/\n?\n[\t ]*/ | COMMENT)
 NUMBER: /[0-9]+/
 STR: "\"" /.*?/ "\""
-IDENTIFIER: /[a-zA-Z$@][a-zA-Z0-9-._]*/
+IDENTIFIER: /[a-zA-Z$@+][a-zA-Z0-9-._\[\]']*/
 %ignore /[\n\t \f]+/ // WS
 %ignore /\\[\t \f]*\r?\n/ // LINE_CONT
 %ignore COMMENT

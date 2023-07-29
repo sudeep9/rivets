@@ -5,24 +5,21 @@
     (in 
         name: "Name of the cluster"
         token: "Token value")
-    (out x: "Integer"))
+    (out
+        x: "Integer"))
 
 (flow myflow
     (in 
-        replid: "Replication ID"
-        interval: def: 100 "Interval")
+        replid:     "Replication ID"
+        interval:   def:100 "Interval")
     (steps
         (Basic-Settings
-            $unit: std.define
-            abc: False
-            name: nil
-            $out: {
-                out_xyz: "world"
-                name: {
-                    a: 1
-                    b: 2
-                }
-            })))
+            $unit:  std.define
+            abc:    false
+            +name:  $LAST[0]['data'])
+        (std.print-vars
+            abc:    false
+            name:   nil)))
 
 
 #(flow myflow

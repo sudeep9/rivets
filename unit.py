@@ -41,4 +41,4 @@ class FlowUnit(Unit):
                 self.args.append(key)
 
     def __str__(self):
-        return f"{self.name} in:{self.inp} defs:{self.defaults}"
+        return f"{self.name} in:{self.inp} defs:{self.defaults} out:{self.out}"
