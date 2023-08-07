@@ -28,24 +28,9 @@
     (in
         varlist: "List of variable name to be printed"))
 
-(unit std.add
-    (fn stdunits.add)
-    (in
-        a: "First integer"
-        b: "Second integer"))
-
-(unit std.mul
-    (fn stdunits.mul)
-    (in
-        a: "First integer"
-        b: "Second integer"))
-
 (unit std.getenv
     (fn stdunits.getenv)
     (opt meta: true)
     (in
         vars:   "List of environment variables"
         error:  def: true "Error if any of the variables are missing")) 
-
-(unit std.testdict
-    (fn stdunits.testdict))
