@@ -60,6 +60,17 @@ def show_progress(ctx: context.Context, phase: str, step = None, u = None, f=Non
     msg = "{0} {1}: {2}{3}".format(p, obj, desc, name)
     print_level(level, msg)
 
+def load_seed_file(filepath):
+    if filepath.endswith('.yaml') or filepath.endswith('.yml'):
+        seed = yml_loader.load_yml(filepath)
+    elif filepath.endswith('.json'):
+        seed = json.loads(filepath)
+    else:
+        raise Exception("Unknown seed file format")
+
+    return seed
+
+
 def do_run_cmd(ns):
     flow_name = ns.name
     cfg_path = ns.cfg
@@ -80,9 +91,17 @@ def do_run_cmd(ns):
             return
         seed = yml_loader.load_yml(ns.seed[1])
     else:
-        seed = {
-            'cli_args': ns.seed,
-        }
+        if len(ns.seed) < 2:
+            argset = flow_name
+        else:
+            argset = ns.seed[1]
+
+        seed = load_seed_file(argmode)
+        
+        try:
+            seed = seed[argset]
+        except KeyError:
+            raise Exception(f"arg set {argset} not found in seed file")
 
     ctx = context.empty_context()
     ctx.log = setup_logging()

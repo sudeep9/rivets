@@ -1,0 +1,6 @@
+
+test-params:
+  varlist: [USER, HOME, PATH]
+
+my.env:
+  varlist: [USER, HOME, PATH]

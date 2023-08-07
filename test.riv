@@ -1,0 +1,11 @@
+(imports "std")
+
+(flow my.env
+    (in
+        varlist: "var list")
+    (out
+        path: "Result of square")
+    (steps
+        (std.getenv 
+            vars:$varlist
+            +path: $PATH)))

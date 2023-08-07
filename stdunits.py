@@ -80,9 +80,3 @@ def getenv(ctx: Context, vars, error=True):
         raise Exception(f"Environment variables {missing} not found")
     
     ctx.vmap.update(values)
-
-def testdict():
-    return {
-        'abc': 1,
-        'pqr': 2,
-    }
