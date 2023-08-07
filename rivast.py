@@ -23,6 +23,7 @@ class RivTransformer(Transformer):
         return item.value[1:-1]
 
     def string(self, item):
+        item[0] = item[0].replace("\\", '')
         return item[0]
 
     def NUMBER(self, items):
@@ -198,7 +199,17 @@ def parse_file(filepath, parser=None) -> RivetsFile:
 
 if __name__ == '__main__':
     import sys
+
+    #p = Lark_StandAlone()
+    #t = parse_file(sys.argv[1], parser=p)
+    #print(t)
+    #sys.exit(0)
+
     t = parse_file(sys.argv[1])
     print("imports", t.imports)
     for name, u in t.unit_map.items():
-        print(f"{name} =>\t{u}")
+        print(f"{name} =>\t{u}", type(u))
+        if isinstance(u, FlowUnit):
+            print(">>>")
+            for s in u.steps:
+                print(s.out)

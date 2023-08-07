@@ -32,13 +32,12 @@ value: NUMBER
 indent_str: (string | IDENTIFIER) -> indent_str
 dict: "{" kv* "}" 
 list: "(" value* ")"
-string: (STR | STR_SQ)
+string: STR 
 
 COMMENT: /#[^\n]*/
 NL: (/\n?\n[\t ]*/ | COMMENT)
 NUMBER: /[0-9]+/
-STR: /".*?"/
-STR_SQ: /'.*?'/
+STR: /"(?!"").*?(?<!\\)(\\\\)*?"|'(?!'').*?(?<!\\)(\\\\)*?'/
 IDENTIFIER: /[a-zA-Z$@+][a-zA-Z0-9-._\[\]']*/
 %ignore /[\n\t \f]+/ // WS
 %ignore /\\[\t \f]*\r?\n/ // LINE_CONT
